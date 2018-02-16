@@ -41,6 +41,7 @@ var parseData = function(data) {
   var step2 = step1.features;
   var step3 = [];
   var step4 = [];
+  
 //need to convert into underscore notation
 //have tried but am struggling with accessing nested with _.each
 //_.each(step2, function(object) {
