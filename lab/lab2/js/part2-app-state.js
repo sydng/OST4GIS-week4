@@ -42,11 +42,17 @@ var parseData = function(data) {
   var step3 = [];
   var step4 = [];
 //need to convert into underscore notation
-//tried to use underscore functions but couldn't get them to work instead of for loop
-//think this is because it is an object not an array
+//have tried but am struggling with accessing nested with _.each
+//_.each(step2, function(object) {
+  //_.each(object, function (elem) {
+    //_.each(elem.properties, function(data) { return _.propertyOf(data)('PROJECTNAME');
+    //});
+  //});
+//});
+
   for(i = 0; i < step2.length; i++) {
-    step3.push(step2[i].properties["PROJECTNAME"]);
-    step4.push(step2[i].geometry["coordinates"]);
+    step3.push(_.propertyOf(step2[i].properties)('PROJECTNAME'));
+    step4.push(_.propertyOf(step2[i].geometry)('coordinates'));
   }
   var step5 = [];
   for(i=0; i < 100; i++) {
@@ -91,18 +97,35 @@ var removeMarkers = function(newLayer) {
     _.each(newLayer, function(y) { map.removeLayer(y); });
 };
 
+//tried to filter based on whether the projectname included "play" for playground
+//couldn't quite get it to work
+var parseData2 = function(data) {
+  var step1 = JSON.parse(data);
+  var step2 = step1.features;
+  var step3 = [];
+  var step4 = [];
+  for(i = 0; i < step2.length; i++) {
+    step3.push(_.propertyOf(step2[i].properties)('PROJECTNAME'));
+    step4.push(_.propertyOf(step2[i].geometry)('coordinates'));
+  }
+  var step5 = [];
+  for(i=0; i < 100; i++) {
+    step5.push(step4[i].concat(step3[i]));
+  }
+  //return step5;
+    step6 = [];
+    for(i = 0; i < step5.length; i++) {
+      if(step5[i].toUpperCase().indexOf('PLAY') >= 0) {
+          step6.push(step5[i]);
+      }
+    return step6;
+    }
+};
+
 /* =====================
   Optional, stretch goal
   Write the necessary code (however you can) to plot a filtered down version of
   the downloaded and parsed data.
-
-  var filteringMarkers = function(sortLayer) {
-      _.each(sortLayer, function(z) {
-        return _.filter(z, function(attempt, i) {
-          return attempt[i][2].toUpperCase().indexOf('PLAY');
-        });
-       });
-  };
 
   Note: You can add or remove from the code at the bottom of this file for the stretch goal.
 ===================== */
@@ -129,6 +152,7 @@ var Stamen_TonerLite = L.tileLayer('http://stamen-tiles-{s}.a.ssl.fastly.net/ton
 
 downloadData.done(function(data) {
   var parsed = parseData(data);
+  //var parsed = parseData2(data);
   var markers = makeMarkers(parsed);
   plotMarkers(markers);
   //removeMarkers(markers);
