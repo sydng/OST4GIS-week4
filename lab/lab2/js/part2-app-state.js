@@ -33,16 +33,42 @@
 ===================== */
 
 // Use the data source URL from lab 1 in this 'ajax' function:
-var downloadData = $.ajax("http://");
+var downloadData = $.ajax("https://raw.githubusercontent.com/sydng/OST4GIS-week4/master/GSI_Public_Projects_Point.geojson");
 
 // Write a function to prepare your data (clean it up, organize it as you like, create fields, etc)
-var parseData = function() {};
+var parseData = function(data) {
+  var step1 = JSON.parse(data);
+  var step2 = step1.features;
+  var step3 = [];
+  var step4 = [];
+//need to convert into underscore notation
+//tried to use underscore functions but couldn't get them to work instead of for loop
+//think this is because it is an object not an array
+  for(i = 0; i < step2.length; i++) {
+    step3.push(step2[i].properties["PROJECTNAME"]);
+    step4.push(step2[i].geometry["coordinates"]);
+  }
+  var step5 = [];
+  for(i=0; i < 100; i++) {
+    step5.push(step4[i].concat(step3[i]));
+  }
+  return step5;
+};
 
 // Write a function to use your parsed data to create a bunch of marker objects (don't plot them!)
-var makeMarkers = function() {};
+var makeMarkers = function(elem) {
+  var step6 = [];
+  //_.each(elem, function(i) { step6.push(L.marker([elem[i][0], elem[i][1]])); });
+  for(i = 0; i < elem.length; i++) {
+    step6.push(L.marker([elem[i][1], elem[i][0]]));
+  }
+  return step6;
+};
 
 // Now we need a function that takes this collection of markers and puts them on the map
-var plotMarkers = function() {};
+var plotMarkers = function(layer) {
+    _.each(layer, function(x) { map.addLayer(x); });
+};
 
 // At this point you should see a bunch of markers on your map.
 // Don't continue on until you can make them appear!
@@ -61,12 +87,22 @@ var plotMarkers = function() {};
 ===================== */
 
 // Look to the bottom of this file and try to reason about what this function should look like
-var removeMarkers = function() {};
+var removeMarkers = function(newLayer) {
+    _.each(newLayer, function(y) { map.removeLayer(y); });
+};
 
 /* =====================
   Optional, stretch goal
   Write the necessary code (however you can) to plot a filtered down version of
   the downloaded and parsed data.
+
+  var filteringMarkers = function(sortLayer) {
+      _.each(sortLayer, function(z) {
+        return _.filter(z, function(attempt, i) {
+          return attempt[i][2].toUpperCase().indexOf('PLAY');
+        });
+       });
+  };
 
   Note: You can add or remove from the code at the bottom of this file for the stretch goal.
 ===================== */
@@ -95,5 +131,7 @@ downloadData.done(function(data) {
   var parsed = parseData(data);
   var markers = makeMarkers(parsed);
   plotMarkers(markers);
-  removeMarkers(markers);
+  //removeMarkers(markers);
+  //filteringMarkers(markers);
+  console.log(parsed);
 });
